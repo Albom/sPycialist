@@ -27,17 +27,19 @@ cpu.pc = spyc_loader.game(GAME)
 debug = False
 running = True
 int_ticks = int(CPU_CLOCK * 1000000 / 50)
-screen = pygame.display.set_mode((384, 256), 0, 8)
+screen_w = 384
+screen_h = 256
+screen = pygame.display.set_mode((screen_w, screen_h), flags=pygame.RESIZABLE, depth=8)
 caption = "sPycialist"
 pygame.display.set_caption(caption)
 
 
 def blitsurface():
     mem = np.reshape(cpu.memory[0x9000:0xc000], (256, 48), 'F')
-    bits = np.unpackbits(mem) #* 255
+    bits = np.unpackbits(mem) * 255
     bits = np.reshape(bits, (256, 384)).T
-    bits = bits.astype('uint32') * 0xFFFFFFFF
-    pygame.surfarray.blit_array(screen, bits)
+    srf = pygame.surfarray.make_surface(bits)
+    screen.blit(srf, (screen_w/2 - 384/2, screen_h/2 - 256/2))
 
 try:
     clock = pygame.time.Clock()
@@ -67,10 +69,12 @@ try:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     spyc_keyboard.keydown(event.key)
-                if event.type == pygame.KEYUP:
+                elif event.type == pygame.KEYUP:
                     spyc_keyboard.keyup(event.key)
+                elif event.type == pygame.VIDEORESIZE:
+                    screen_w, screen_h = event.w, event.h
 
             if SHOW_FPS:
                 fps = clock.get_fps()
