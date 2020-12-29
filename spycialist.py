@@ -20,10 +20,10 @@ ROM = 'system.rom'
 SHOW_FPS = True
 CPU_CLOCK = 2  # In MHz. Default Intel 8080 frequency is 2 MHz
 
-cpu.pc = spyc_loader.game(GAME)
 spyc_loader.rom(ROM, 0xc000)
-cpu.pc = 0xc000
 cpu.sp = 0x7FFF
+cpu.pc = spyc_loader.game(GAME)
+
 debug = False
 running = True
 int_ticks = int(CPU_CLOCK * 1000000 / 50)
@@ -34,9 +34,10 @@ pygame.display.set_caption(caption)
 
 def blitsurface():
     mem = np.reshape(cpu.memory[0x9000:0xc000], (256, 48), 'F')
-    bits = np.unpackbits(mem) * 255
-    pygame.surfarray.blit_array(screen, np.reshape(bits, (256, 384)).T)
-
+    bits = np.unpackbits(mem) #* 255
+    bits = np.reshape(bits, (256, 384)).T
+    bits = bits.astype('uint32') * 0xFFFFFFFF
+    pygame.surfarray.blit_array(screen, bits)
 
 try:
     clock = pygame.time.Clock()
