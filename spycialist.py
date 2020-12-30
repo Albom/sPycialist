@@ -9,6 +9,7 @@
 
 import pygame
 import pygame.surfarray
+import pygame.transform
 import numpy as np
 
 import i8080 as cpu
@@ -19,9 +20,9 @@ GAME = 'zoo.rks'
 ROM = 'system.rom'
 SHOW_FPS = True
 CPU_CLOCK = 2  # In MHz. Default Intel 8080 frequency is 2 MHz
-
 spyc_loader.rom(ROM, 0xc000)
 cpu.sp = 0x7FFF
+#cpu.pc = 0
 cpu.pc = spyc_loader.game(GAME)
 
 debug = False
@@ -39,7 +40,8 @@ def blitsurface():
     bits = np.unpackbits(mem) * 255
     bits = np.reshape(bits, (256, 384)).T
     srf = pygame.surfarray.make_surface(bits)
-    screen.blit(srf, (screen_w/2 - 384/2, screen_h/2 - 256/2))
+    srf = pygame.transform.scale(srf, (screen_w, screen_h))
+    screen.blit(srf, (0, 0))
 
 try:
     clock = pygame.time.Clock()
@@ -72,6 +74,7 @@ try:
                 elif event.type == pygame.KEYDOWN:
                     spyc_keyboard.keydown(event.key)
                 elif event.type == pygame.KEYUP:
+                    print(event.key)
                     spyc_keyboard.keyup(event.key)
                 elif event.type == pygame.VIDEORESIZE:
                     screen_w, screen_h = event.w, event.h
