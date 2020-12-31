@@ -20,12 +20,13 @@ GAME = 'zoo.rks'
 ROM = 'system.rom'
 SHOW_FPS = True
 CPU_CLOCK = 2  # In MHz. Default Intel 8080 frequency is 2 MHz
+#cpu.pc = spyc_loader.game(GAME)
 spyc_loader.rom(ROM, 0xc000)
 cpu.sp = 0x7FFF
-#cpu.pc = 0
-cpu.pc = spyc_loader.game(GAME)
+cpu.pc = 0
 
-debug = False
+
+debug = True
 running = True
 int_ticks = int(CPU_CLOCK * 1000000 / 50)
 screen_w = 384
@@ -54,10 +55,10 @@ try:
         #     debug = True
         #     # print('PC:', hex(cpu.pc))
         #     pass
-        # if debug:
-        #     # blitsurface()
-        #     # pygame.display.flip()
-        #     cpu.display_regs()  # Set breakpoint here
+        #if debug:
+            #blitsurface()
+            #pygame.display.flip()
+            #cpu.display_regs()  # Set breakpoint here
 
         cpu.core()
         if cpu.ticks > int_ticks:
@@ -74,14 +75,13 @@ try:
                 elif event.type == pygame.KEYDOWN:
                     spyc_keyboard.keydown(event.key)
                 elif event.type == pygame.KEYUP:
-                    print(event.key)
                     spyc_keyboard.keyup(event.key)
                 elif event.type == pygame.VIDEORESIZE:
                     screen_w, screen_h = event.w, event.h
 
             if SHOW_FPS:
                 fps = clock.get_fps()
-                with_fps = "{} - {:.2f} FPS".format(caption, fps)
+                with_fps = "{} - {:.0f} FPS".format(caption, fps)
                 pygame.display.set_caption(with_fps)
 
     pygame.quit()
