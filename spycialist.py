@@ -42,9 +42,10 @@ def blitsurface():
     bits = np.reshape(bits, (256, 384)).T
     srf = pygame.surfarray.make_surface(bits)
 
+    scr_ratio = 384.0/256.0
     new_h, new_w = (screen_h, 
-                    int(screen_h*384/256)) if screen_w >= screen_h else (int(screen_w*256/384), 
-                                                                             screen_w)
+                    int(screen_h*scr_ratio)) if screen_w/screen_h >= scr_ratio else (int(screen_w/scr_ratio), 
+                                                                                         screen_w)
 
     srf = pygame.transform.scale(srf, (new_w, new_h))
     screen.blit(srf, (screen_w/2-new_w/2, screen_h/2-new_h/2))
