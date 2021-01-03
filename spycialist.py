@@ -20,11 +20,11 @@ GAME = 'zoo.rks'
 ROM = 'system.rom'
 SHOW_FPS = True
 CPU_CLOCK = 2  # In MHz. Default Intel 8080 frequency is 2 MHz
-#cpu.pc = spyc_loader.game(GAME)
+
 spyc_loader.rom(ROM, 0xc000)
 cpu.sp = 0x7FFF
 cpu.pc = 0
-
+cpu.pc = spyc_loader.game(GAME)
 
 debug = True
 running = True
@@ -41,8 +41,13 @@ def blitsurface():
     bits = np.unpackbits(mem) * 255
     bits = np.reshape(bits, (256, 384)).T
     srf = pygame.surfarray.make_surface(bits)
-    srf = pygame.transform.scale(srf, (screen_w, screen_h))
-    screen.blit(srf, (0, 0))
+
+    new_h, new_w = (screen_h, 
+                    int(screen_h*384/256)) if screen_w >= screen_h else (int(screen_w*256/384), 
+                                                                             screen_w)
+
+    srf = pygame.transform.scale(srf, (new_w, new_h))
+    screen.blit(srf, (screen_w/2-new_w/2, screen_h/2-new_h/2))
 
 try:
     clock = pygame.time.Clock()
